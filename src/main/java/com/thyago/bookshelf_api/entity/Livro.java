@@ -25,10 +25,11 @@ public class Livro {
     @Column(nullable = false)
     private String autor;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private  String sinopse;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Edicao edicao;
 
     @JoinColumn(name = "categoria_id", nullable = false)

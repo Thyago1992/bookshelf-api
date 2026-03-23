@@ -23,12 +23,17 @@ public class CategoriaController {
         this.categoriaService = categoriaService;
     }
 
-    @Operation(description = "Recupera a lista de todas as categorias cadastradas no sistema.")
+    @Operation(description = "Recupera a lista de todas as categorias cadastradas no sistema. " +
+            "Utilize o parâmetro 'nome' para filtrar por nome, ignorando diferenças de maiúsculas e minúsculas. " +
+            "Exemplo: GET /categorias?nome=ficção")
     @ApiResponses(value = @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso."))
     @GetMapping
-    public ResponseEntity<List<CategoriaResponseDTO>> findAll() {
-        List<CategoriaResponseDTO> categorias = categoriaService.findAll();
-        return ResponseEntity.ok(categorias);
+    public ResponseEntity<List<CategoriaResponseDTO>> findAll(
+            @RequestParam(required = false) String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return ResponseEntity.ok(categoriaService.findAllByNomeIgnoreCase(nome));
+        }
+        return ResponseEntity.ok(categoriaService.findAll());
     }
 
     @Operation(description = "Recupera os detalhes de uma categoria específica com base no ID fornecido.")
@@ -40,15 +45,6 @@ public class CategoriaController {
     public ResponseEntity<CategoriaResponseDTO> findById(@PathVariable Long id) {
         CategoriaResponseDTO categoria = categoriaService.findById(id);
         return ResponseEntity.ok(categoria);
-    }
-
-    @Operation(description = "Recupera a lista de categorias que correspondem ao nome fornecido, ignorando diferenças " +
-            "de maiúsculas e minúsculas.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso.")})
-    @GetMapping("/nome/{nome}")
-    public ResponseEntity<List<CategoriaResponseDTO>> findByNome(@PathVariable String nome) {
-        List<CategoriaResponseDTO> categorias = categoriaService.findAllByNomeIgnoreCase(nome);
-        return ResponseEntity.ok(categorias);
     }
 
     @Operation(description = "Cria uma nova categoria no sistema com os dados fornecidos no corpo da requisição.")
